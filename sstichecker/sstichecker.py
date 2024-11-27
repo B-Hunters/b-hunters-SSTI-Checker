@@ -84,7 +84,8 @@ class sstichecker(BHunters):
         data2=self.checklinksexist(self.subdomain,p6.stdout.read().decode("utf-8"))
         # URL encode each entry in data2
         dataencoded = [url.replace(' ', '%20') for url in data2 if url]
-        
+        p6.stdout.close()
+
         result=[]
         try:
             if data2 != ['']:
