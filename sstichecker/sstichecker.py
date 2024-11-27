@@ -70,14 +70,18 @@ class sstichecker(BHunters):
             file.write(data)
 
         p1 = subprocess.Popen(["cat", filename], stdout=subprocess.PIPE)
-        p2 = subprocess.Popen(["grep","="], stdin=p1.stdout, stdout=subprocess.PIPE)
+        p3 = subprocess.Popen(["grep", "-v", "png\|jpg\|css\|js\|gif\|txt"], stdin=p1.stdout, stdout=subprocess.PIPE)
         p1.stdout.close()
-
-        p3 = subprocess.Popen(["uro","--filter","hasparams"], stdin=p2.stdout, stdout=subprocess.PIPE)
-        p2.stdout.close()
-        p4 = subprocess.Popen(["qsreplace","-a"], stdin=p3.stdout, stdout=subprocess.PIPE)
+        # Command 4: grep '='
+        p4 = subprocess.Popen(["grep", "="], stdin=p3.stdout, stdout=subprocess.PIPE)
         p3.stdout.close()
-        data2=self.checklinksexist(self.subdomain,p4.stdout.read().decode("utf-8"))
+
+        # Command 5: uro
+        p5 = subprocess.Popen(["uro","--filter","hasparams"], stdin=p4.stdout, stdout=subprocess.PIPE)
+        p4.stdout.close()
+        p6 = subprocess.Popen(["qsreplace","FUZZ"], stdin=p5.stdout, stdout=subprocess.PIPE)
+        p5.stdout.close()
+        data2=self.checklinksexist(self.subdomain,p6.stdout.read().decode("utf-8"))
         # URL encode each entry in data2
         dataencoded = [url.replace(' ', '%20') for url in data2 if url]
         
