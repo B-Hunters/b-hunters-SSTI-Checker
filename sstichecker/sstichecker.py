@@ -14,6 +14,7 @@ import requests.exceptions
 
 def runsstichecker(url):
     result=""
+    output=""
     try:
         # for i in data:
         if url != "":
@@ -31,6 +32,7 @@ def runsstichecker(url):
                 output=output.decode('utf-8')
                 if "appear to be not injectable" not in output:
                     result=url
+                    return result,output
 
             except requests.exceptions.RequestException:
                 pass
@@ -38,7 +40,7 @@ def runsstichecker(url):
     except Exception as e:
         print("error ",e)
         # result=[]
-    return result
+    return ""
 
 class sstichecker(BHunters):
     """
@@ -96,6 +98,8 @@ class sstichecker(BHunters):
                 for res in result_array:
                     if res !="":
                         result.append(res)
+                        self.log.info(f"Vulnerability found at {res[0]}")
+                        self.log.info(res[1])
 
             # result=runsstichecker(data2)
         except Exception as e:
@@ -122,7 +126,12 @@ class sstichecker(BHunters):
                 domain_document = collection.find_one({"Domain": subdomain})
                 if domain_document:
                     collection.update_one({"Domain": subdomain}, {"$push": {f"Vulns.SSTIMap": {"$each": result}}})
-                self.send_discord_webhook("SSTI Checker","\n".join(result),"main")
+                resultarr=[]
+                for i in result:
+                    resultarr.append(i[0])
+                output="\n".join(resultarr)
+
+                self.send_discord_webhook("SSTI Checker",output,"main")
         except Exception as e:
             self.log.error(e)
             self.update_task_status(subdomain,"Failed")
