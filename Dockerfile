@@ -22,7 +22,7 @@ RUN go install github.com/tomnomnom/qsreplace@latest
 
 FROM python:3.10-slim
 RUN apt update && apt install git -y && apt clean && rm -rf /var/lib/apt/lists/*
-RUN pip install --no-cache-dir b-hunters==1.1.7 uro
+RUN pip install --no-cache-dir b-hunters==1.1.13 uro
 COPY --from=build /usr/local/go /usr/local/go
 COPY --from=build /root/go/bin /root/go/bin
 

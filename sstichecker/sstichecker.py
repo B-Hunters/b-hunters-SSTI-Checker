@@ -11,6 +11,7 @@ import multiprocessing
 import warnings
 import requests
 import requests.exceptions
+from bson.objectid import ObjectId
 
 def runsstichecker(url):
     result=""
@@ -61,7 +62,7 @@ class sstichecker(BHunters):
                
     def scan(self,url,source):
         try:    
-            data=self.backend.download_object("bhunters",f"{source}_"+self.encode_filename(url))
+            data=self.backend.download_object("bhunters",f"{source}_"+self.scanid+"_"+self.encode_filename(url))
         except Exception as e:
             raise Exception(e)
 
@@ -114,18 +115,21 @@ class sstichecker(BHunters):
         subdomain=task.payload["subdomain"]
         self.subdomain=subdomain
         source=task.payload["source"]
+        self.scanid=task.payload_persistent["scan_id"]
+        report_id=task.payload_persistent["report_id"]
         self.update_task_status(subdomain,"Started")
         self.log.info("Starting processing new url")
         self.log.warning(f"{source} {url}")
         try:
                 
             result=self.scan(url,source)
+            self.waitformongo()
             db=self.db
-            collection=db["domains"]
+            collection=db["reports"]
             if result !=None and result !=[]:
-                domain_document = collection.find_one({"Domain": subdomain})
+                domain_document = collection.find_one({"_id": ObjectId(report_id)})
                 if domain_document:
-                    collection.update_one({"Domain": subdomain}, {"$push": {f"Vulns.SSTIMap": {"$each": result}}})
+                    collection.update_one({"_id": report_id}, {"$push": {f"Vulns.SSTIMap": {"$each": result}}})
                 resultarr=[]
                 for i in result:
                     resultarr.append(i[0])
