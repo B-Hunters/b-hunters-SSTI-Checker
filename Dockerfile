@@ -1,5 +1,5 @@
 # Build Stage
-FROM ubuntu:latest AS build
+FROM ubuntu@sha256:d66b366dac61b575bee2aef07e9c26e8070096fbe84a3d4d3eb0da069b5d76db AS build
 
 # Update and install necessary build tools
 RUN apt update && apt install -y \
@@ -28,7 +28,6 @@ RUN apt update && apt install git -y && apt clean && rm -rf /var/lib/apt/lists/*
 # script passes the local wheel; the default is the published release.
 ARG B_HUNTERS_WHEEL=b-hunters==1.4.1
 RUN pip install --no-cache-dir ${B_HUNTERS_WHEEL} uro
-COPY --from=build /usr/local/go /usr/local/go
 COPY --from=build /root/go/bin /root/go/bin
 
 RUN git clone https://github.com/vladko312/SSTImap /root/SSTImap/
