@@ -20,7 +20,7 @@ ENV GOPATH="/root/go"
 RUN go install github.com/tomnomnom/qsreplace@latest
 
 
-FROM python:3.10-slim
+FROM python@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
 RUN apt update && apt install git -y && apt clean && rm -rf /var/lib/apt/lists/*
 # The shared class is built from the platform repository, not from the
 # published release: a worker that calls auth_headers(task) against a
