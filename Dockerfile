@@ -26,7 +26,7 @@ RUN apt update && apt install git -y && apt clean && rm -rf /var/lib/apt/lists/*
 # published release: a worker that calls auth_headers(task) against a
 # release that does not have it fails inside the scan.  The build
 # script passes the local wheel; the default is the published release.
-ARG B_HUNTERS_WHEEL=b-hunters==1.4.1
+ARG B_HUNTERS_WHEEL=b-hunters==1.5.1
 RUN pip install --no-cache-dir ${B_HUNTERS_WHEEL} uro
 COPY --from=build /root/go/bin /root/go/bin
 
